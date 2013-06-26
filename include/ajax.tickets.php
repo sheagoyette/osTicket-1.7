@@ -319,6 +319,13 @@ class TicketsAjaxAPI extends AjaxController {
                     </tr>',
                     Format::db_datetime($ticket->getEstDueDate()));
         }
+        echo sprintf('
+                <tr>
+                    <th width="100">Time Spent:</th>
+                    <td>%s</td>
+                </tr>',
+                Format::htmlchars($ticket->formatTime($ticket->getTimeSpent()))
+                );
         echo '</table>';
 
 

@@ -234,6 +234,10 @@ class Ticket {
         return $this->ht['closed'];
     }
 
+    function getTimeSpent() {
+        return $this->ht['time_spent'];
+    }
+
     function getStatus() {
         return $this->ht['status'];
     }
@@ -314,6 +318,24 @@ class Ticket {
             $this->tlock= TicketLock::lookup($this->getLockId(), $this->getId());
 
         return $this->tlock;
+    }
+
+    function formatTime($time) {
+
+        $hours = floor($time);
+        $minutes = round(($time-$hours) * 60);
+
+        if ($hours > 0) {
+            $formatted_time .= $hours.($hours == 1 ? ' hour' : ' hours');
+            if ($minutes > 0) {
+                $formatted_time .= ' '.$minutes.($minutes == 1 ? ' minute' : ' minutes');
+            }
+        }
+        else {
+            $formatted_time .= $minutes.($minutes == 1 ? ' minute' : ' minutes');
+        }
+
+        return $formatted_time; 
     }
 
     function acquireLock($staffId, $lockTime) {
@@ -711,6 +733,57 @@ class Ticket {
 
         $this->logEvent('reopened', 'closed');
         return (db_query($sql) && db_affected_rows());
+    }
+
+    function timeSpent($time) {
+        if (empty($time) || !is_numeric($time)) {
+            $time = 0.00;
+        } else {
+            $time = round($time, 2);
+        }
+
+        $sql='UPDATE '.TICKET_TABLE.' SET time_spent=time_spent+'.db_input($time)
+            .' WHERE ticket_id='.db_input($this->getId());
+
+        return (db_query($sql) && db_affected_rows());
+    }
+
+    function timeSpentDel($time) {
+        if (empty($time) || !is_numeric($time)) {
+            $time = 0.00;
+        } else {
+            $time = round($time, 2);
+        }
+
+        $sql='UPDATE '.TICKET_TABLE.' SET time_spent=time_spent-'.db_input($time)
+            .' WHERE ticket_id='.db_input($this->getId());
+
+        return (db_query($sql) && db_affected_rows());
+    }
+
+    function timeSpentEntry($id, $time) {
+        if (empty($time) || !is_numeric($time)) {
+            $time = 0.00;
+        } else {
+            $time = round($time, 2);
+        }
+
+        $sql='UPDATE '.TICKET_THREAD_TABLE.' SET time_spent='.db_input($time)
+            .' WHERE id='.db_input($id);
+
+        $this->timeSpent($time);
+
+        return (db_query($sql) && db_affected_rows());
+    }
+
+    function timeSpentEntryDel($id) {
+        $sql='SELECT time_spent FROM '.TICKET_THREAD_TABLE
+            .' WHERE id='.db_input($id);
+
+        $result = db_query($sql);
+        $row = db_fetch_array($result);
+        $time = $row['time_spent'];
+        $this->timeSpentDel($time);
     }
 
     function onNewTicket($message, $autorespond=true, $alertstaff=true) {

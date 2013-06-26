@@ -66,6 +66,7 @@ if($_POST && !$errors):
 
             if(!$errors && ($response=$ticket->postReply($vars, $errors, isset($_POST['emailreply'])))) {
                 $msg='Reply posted successfully';
+                $ticket->timeSpentEntry($response->getId(),$_POST['reply_time_spent']);
                 $ticket->reload();
                 if($ticket->isClosed() && $wasOpen)
                     $ticket=null;
@@ -168,6 +169,7 @@ if($_POST && !$errors):
             if(($note=$ticket->postNote($vars, $errors, $thisstaff))) {
 
                 $msg='Internal note posted successfully';
+                $ticket->timeSpentEntry($note->getId(),$_POST['note_time_spent']);
                 if($wasOpen && $ticket->isClosed())
                     $ticket = null; //Going back to main listing.
 

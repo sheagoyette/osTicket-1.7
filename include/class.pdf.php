@@ -195,12 +195,16 @@ class Ticket2PDF extends FPDF
             $this->SetFont('');
             $this->Cell($c, 7, Format::db_datetime($ticket->getCloseDate()), 1, 0, 'L', true);
         }
-
         $this->SetFont('Arial', 'B', 11);
         $this->Cell($l, 7, 'Last Message', 1, 0, 'L', true);
         $this->SetFont('');
         $this->Cell($c, 7, Format::db_datetime($ticket->getLastMsgDate()), 1, 1, 'L', true);
-        $this->Ln(5);
+
+        $this->SetFont('Arial', 'B', 11);
+        $this->Cell($l, 7, 'Time Spent', 1, 0, 'L', true);
+        $this->SetFont('');
+        $this->Cell($c, 7, Format::htmlchars($ticket->formatTime($ticket->getTimeSpent())), 1, 0, 'L', true);
+        $this->Ln(10);
 
         $this->SetFont('Arial', 'B', 11);
         $this->cMargin = 0;

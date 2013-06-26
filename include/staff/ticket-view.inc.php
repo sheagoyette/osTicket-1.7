@@ -245,6 +245,10 @@ if($ticket->isOverdue())
                 <?php
                 }
                 ?>
+                <tr>
+                    <th>Time Spent:</th>
+                    <td><?php echo Format::htmlchars($ticket->formatTime($ticket->getTimeSpent())); ?></td>
+                </tr>
             </table>
         </td>
         <td width="50%">
@@ -314,6 +318,11 @@ if(!$cfg->showNotesInline()) { ?>
             </tr>
             <?php
             }?>
+            <tr>
+                <td class="info" colspan="2">
+                    <b>Time Spent:</b> <?php echo Format::htmlchars($ticket->formatTime($note['time_spent'])); ?>
+                </td>
+            </tr>
         </table>
     <?php
         }
@@ -349,6 +358,11 @@ if(!$cfg->showNotesInline()) { ?>
             </tr>
             <?php
             }?>
+            <tr>
+                <td class="info" colspan="3">
+                    <b>Time Spent:</b> <?php echo Format::htmlchars($ticket->formatTime($entry['time_spent'])); ?>
+                </td>
+            </tr>
         </table>
         <?php
         if($entry['thread_type']=='M')
@@ -482,6 +496,18 @@ if(!$cfg->showNotesInline()) { ?>
                 </td>
             </tr>
             <?php
+            if($ticket->isOpen()) { ?>
+            <tr>
+                <td width="160">
+                    <label for="reply_time_spent" class="left">Time Spent:</label>
+                </td>
+                <td width="765">
+                    <input type="text" name="reply_time_spent" size="5" value="<?php if (isset($_POST['reply_time_spent'])) echo $_POST['reply_time_spent']; ?>"/> (0.75 = 45 minutes)
+                </td>
+            </tr>
+            <?php
+            } ?>
+            <?php
             if($ticket->isClosed() || $thisstaff->canCloseTickets()) { ?>
             <tr>
                 <td width="160">
@@ -558,7 +584,19 @@ if(!$cfg->showNotesInline()) { ?>
             <?php
             }
             ?>
-            <tr><td colspan="2">&nbsp;</td></tr>
+            <?php
+            if($ticket->isOpen()) { ?>
+            <tr>
+                <td width="160">
+                    <label for="note_time_spent" class="left">Time Spent:</label>
+                </td>
+                <td width="765">
+                    <input type="text" name="note_time_spent" size="5" value="<?php if (isset($_POST['note_time_spent'])) echo $_POST['note_time_spent']; ?>"/> (0.75 = 45 minutes)
+                </td>
+            </tr>
+            <?php
+            }
+            ?>
             <tr>
                 <td width="160">
                     <label>Ticket Status:</label>
